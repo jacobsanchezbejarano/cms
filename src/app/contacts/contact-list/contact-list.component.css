@@ -1,0 +1,9 @@
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+}
+
+.panel-heading button {
+    height: 40px;
+    margin: auto 0;
+}
