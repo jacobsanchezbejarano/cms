@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Contact } from './contact-list/contact.model';
 
 @Component({
   selector: 'cms-contacts',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./contacts.component.css']
 })
 export class ContactsComponent {
-
+  @Input() selectedContactEvent!: Contact;
 }

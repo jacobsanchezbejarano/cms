@@ -2,7 +2,7 @@
     <div class="col-md-5">
         <div class="row">
             <div class="col-md-12">
-                <cms-contact-list></cms-contact-list>
+                <cms-contact-list (selectedContactEvent)="selectedContactEvent = $event" ></cms-contact-list>
             </div>
             <div class="col-md-12">
                 
@@ -10,6 +10,6 @@
         </div>
     </div>
     <div class="col-md-4">
-        <cms-contact-detail></cms-contact-detail>
+        <cms-contact-detail *ngIf="selectedContactEvent != null && selectedContactEvent != undefined" [contact]="selectedContactEvent"></cms-contact-detail>
     </div>
 </div>
