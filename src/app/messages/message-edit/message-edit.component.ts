@@ -8,27 +8,29 @@ import { Message } from '../message.model';
 })
 export class MessageEditComponent implements OnInit {
   @ViewChild('subject') subject!: ElementRef;
-  @ViewChild('msgTxt') msgTxt!: ElementRef;
+  @ViewChild('msgText') msgText!: ElementRef;
   @Output() addMessageEvent = new EventEmitter<Message>();
   currentSender = "Jacob Sanchez";
 
   constructor(){}
   onSendMessage(){
     const subjectValue = this.subject.nativeElement.value;
-    const msgTxt = this.msgTxt.nativeElement.value;
+    const msgText = this.msgText.nativeElement.value;
 
-    const message = new Message(1,subjectValue,msgTxt,this.currentSender);
+    const message = new Message(1,subjectValue,msgText,this.currentSender);
     this.addMessageEvent.emit(message);
 
     this.onClear();
   }
-
-  onClear(){
-    this.subject.nativeElement.value = '';
-    this.msgTxt.nativeElement.value = '';
-  }
-
+  
   ngOnInit(): void {
     
   }
+
+  onClear(){
+    this.subject.nativeElement.value = '';
+    this.msgText.nativeElement.value = '';
+  }
+
+  
 }
