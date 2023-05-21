@@ -8,7 +8,6 @@ import { DocumentService } from '../document.service';
   styleUrls: ['./document-list.component.css']
 })
 export class DocumentListComponent implements OnInit {
-  @Output() selectedDocumentEvent = new EventEmitter<Document>();
 
   documents: Document[] = [];
 
@@ -19,7 +18,7 @@ export class DocumentListComponent implements OnInit {
   }
 
   onSelectedDocument(document: Document){
-    this.selectedDocumentEvent.emit(document);
+    this.documentService.documentSelectedEvent.emit(document);
   }
 
 }

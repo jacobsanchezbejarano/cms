@@ -8,8 +8,6 @@ import { ContactService } from '../contact.service';
   styleUrls: ['./contact-list.component.css']
 })
 export class ContactListComponent implements OnInit{
-  
-  @Output() selectedContactEvent = new EventEmitter<Contact>();
 
   constructor (private contactService: ContactService) {
 
