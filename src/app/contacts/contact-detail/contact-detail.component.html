@@ -1,10 +1,10 @@
-<div class="panel panel-default">
+<div class="panel panel-default" *ngIf="contact">
     <div class="panel-heading">
         <h4>{{ contact.name }}</h4>
         <div class="justify-content-end">
             <img [src]="contact.imageUrl" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;">
-            <button class="btn btn-primary">Edit</button>
-            <button class="btn btn-danger">Delete</button>
+            <button class="btn btn-primary" [routerLink]="['edit']">Edit</button>
+            <button class="btn btn-danger" (click)="onDelete()">Delete</button>
         </div>
     </div>
     <div class="panel-body">
