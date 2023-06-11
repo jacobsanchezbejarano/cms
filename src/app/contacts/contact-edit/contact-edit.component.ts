@@ -15,6 +15,7 @@ export class ContactEditComponent implements OnInit {
   groupContacts: Contact[] = [];
   editMode: boolean = false;
   id!: string;
+  contactExists: boolean = false;
   
   constructor(
        private contactService: ContactService,
@@ -45,9 +46,39 @@ export class ContactEditComponent implements OnInit {
     }) 
   }
 
-  onRemoveItem(i: any) {
-    console.log(i);
+  
+  onRemoveItem(index: number) {
+    if (index < 0 || index >= this.groupContacts.length) {
+      return;
+    }
+    this.groupContacts.splice(index, 1);
   }
+  
+  addToGroup($event: any) {
+    const selectedContact: Contact = $event.dragData;
+    const invalidGroupContact = this.isInvalidContact(selectedContact);
+    if (invalidGroupContact){
+      this.contactExists = true;
+      return;
+    }
+    this.contactExists = false;
+    this.groupContacts.push(selectedContact);
+  }
+
+  isInvalidContact(newContact: Contact) {
+    if (!newContact) {// newContact has no value
+      return true;
+    }
+    if (this.contact && newContact.id === this.contact.id) {
+       return true;
+    }
+    for (let i = 0; i < this.groupContacts.length; i++){
+       if (newContact.id === this.groupContacts[i].id) {
+         return true;
+      }
+    }
+    return false;
+ }
 
   onSubmit(form: NgForm) {
     let value = form.value // get values from form’s fields

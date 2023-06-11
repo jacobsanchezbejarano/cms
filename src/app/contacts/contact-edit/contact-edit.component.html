@@ -71,9 +71,11 @@
         <div class="row">
           <div class="form-group">
             <label for="groupList">Group Contacts:</label>
+            <div *ngIf="contactExists" class="alert alert-danger">Contact can not be added to the group. It is already in the group or is the current contact</div>
   
             <div class="row" id="groupList"
-                style="min-height: 3rem;" >
+                style="min-height: 3rem;" 
+                dnd-droppable [dropZones]="['contactGroup']" (onDropSuccess)="addToGroup($event)">
   
               <div *ngFor="let contact of groupContacts; let i = index">
                 <div>
@@ -83,7 +85,6 @@
               </div>
               <span class="dragMsg" *ngIf="groupContacts.length < 1">Drag contacts in group here</span>
               </div>
-  
           </div>
         </div>
   
