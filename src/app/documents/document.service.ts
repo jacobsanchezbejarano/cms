@@ -70,7 +70,7 @@ export class DocumentService {
     this.documentListChangedEvent.next(documentsListClone);
   }
 
-  updateDocument(originalDocument: Document, newDocument: Document) {
+  updateDocument(originalDocument: Document | null, newDocument: Document) {
       if ((originalDocument == undefined || null) || (newDocument == undefined || null)){
           return;
       }
