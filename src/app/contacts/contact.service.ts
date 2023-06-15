@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Contact } from './contact.model';
 import {MOCKCONTACTS} from './MOCKCONTACTS';
@@ -15,9 +16,37 @@ export class ContactService {
   contacts: Contact[] = [];
   maxContactId!: number;
 
-  constructor() { 
+  constructor(private httpClient: HttpClient) { 
+
     this.contacts = MOCKCONTACTS;
     this.maxContactId = this.getMaxId();
+    this.httpClient
+    .get<Contact[]>('https://cms-wdd430-jacob-default-rtdb.firebaseio.com/contacts.json')
+    .subscribe(
+       // success method
+       (contacts: Contact[] ) => {
+          this.contacts = contacts;
+          this.maxContactId = this.getMaxId();
+          const sortedDocuments = contacts.slice().sort((a, b) => a.name.localeCompare(b.name));
+          this.contactListChangedEvent.next(sortedDocuments);
+       },
+       // error method
+       (error: any) => {
+          console.error(error);
+       } )
+  }
+
+  storeContacts() {
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/json');
+      let data = JSON.stringify(this.contacts);
+      this.httpClient.put('https://cms-wdd430-jacob-default-rtdb.firebaseio.com/contacts.json',
+      data, { headers: headers }).subscribe(
+        response => {
+          let contactsListClone = this.contacts.slice().sort((a, b) => a.name.localeCompare(b.name));
+          this.contactListChangedEvent.next(contactsListClone);
+        }
+      )
   }
 
   getContacts(): Contact[] {
@@ -37,8 +66,7 @@ export class ContactService {
       return;
    }
    this.contacts.splice(pos, 1);
-   let contactsListClone = this.contacts.slice();
-   this.contactListChangedEvent.next(contactsListClone);
+   this.storeContacts();
   }
 
   getMaxId(){
@@ -63,8 +91,7 @@ export class ContactService {
     this.maxContactId++
     newContact.id = ""+this.maxContactId;
     this.contacts.push(newContact);
-    let contactsListClone = this.contacts.slice();
-    this.contactListChangedEvent.next(contactsListClone);
+    this.storeContacts();
   }
 
   updateDocument(originalContact: Contact | null, newContact: Contact) {
@@ -79,7 +106,6 @@ export class ContactService {
 
       newContact.id = originalContact.id;
       this.contacts[pos] = newContact;
-      let contactsListClone = this.contacts.slice()
-      this.contactListChangedEvent.next(contactsListClone)
+      this.storeContacts();
   }
 }
