@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { MOCKMESSAGES } from './MOCKMESSAGES';
+// import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { Message } from './message.model';
 import { Subject } from 'rxjs';
 
@@ -18,7 +18,7 @@ export class MessageService {
       // this.messages = MOCKMESSAGES;
       this.maxMessageId = this.getMaxId();
       this.httpClient
-      .get<Message[]>('https://cms-wdd430-jacob-default-rtdb.firebaseio.com/messages.json')
+      .get<Message[]>('http://localhost:3000/messages')
       .subscribe(
         // success method
         (messages: Message[] ) => {
@@ -34,8 +34,7 @@ export class MessageService {
   }
 
   getMaxId() {
-    let maxId = 0
-
+    let maxId = 0;
       this.messages.forEach(message =>{
         let currentId = +message.id
           if (currentId > maxId){
@@ -51,13 +50,30 @@ export class MessageService {
     const headers = new HttpHeaders()
     .set('Content-Type', 'application/json');
     let data = JSON.stringify(this.messages);
-    this.httpClient.put('https://cms-wdd430-jacob-default-rtdb.firebaseio.com/messages.json',
+    this.httpClient.put('http://localhost:3000/messages',
     data, { headers: headers }).subscribe(
       response => {
         let messagesListClone = this.messages.slice().sort((a, b) => a.id.localeCompare(b.id));
         this.messageListChangedEvent.next(messagesListClone);
       }
     )
+  }
+
+  sortAndSend() {
+    this.httpClient
+      .get<Message[]>('http://localhost:3000/messages')
+      .subscribe(
+        // success method
+        (messages: Message[] ) => {
+            this.messages = messages;
+            this.maxMessageId = this.getMaxId();
+            const sortedMessages = messages.slice().sort((a, b) => a.id.localeCompare(b.id));
+            this.messageListChangedEvent.next(sortedMessages);
+        },
+        // error method
+        (error: any) => {
+            console.error(error);
+        } )
   }
 
   getMessages(): Message[] {
@@ -68,13 +84,27 @@ export class MessageService {
     return this.messages.find(message => message.id === id) || null;
   }
 
-  addMessage(message: Message){
-    if (message == undefined || null) {
-      return
+  addMessage(message: Message) {
+    if (!message) {
+      return;
     }
-    this.maxMessageId++
-    message.id = ""+this.maxMessageId;
-    this.messages.push(message);
-    this.storeMessages();
+
+    // make sure id of the new Message is empty
+    message.id = '';
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // add to database
+    this.httpClient.post<{ res_message: string, message: Message }>('http://localhost:3000/messages',
+      message,
+      { headers: headers })
+      .subscribe(
+        (responseData) => {
+          // add new message to messages
+          this.messages.push(responseData.message);
+          this.sortAndSend();
+        }
+      );
   }
+
 }
